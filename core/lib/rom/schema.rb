@@ -220,19 +220,16 @@ module ROM
     # @raise KeyError
     #
     # @api public
-    def [](key, src = name.to_sym)
-      attr =
-        if count_index[key].equal?(1)
-          name_index[key]
-        else
-          source_index[src][key]
-        end
-
-      unless attr
+    def [](key, src = nil)
+      if count_index[key] == 0
         raise(KeyError, "#{key.inspect} attribute doesn't exist in #{src} schema")
+      elsif count_index[key] > 1 && src.nil?
+        raise(KeyError, "#{key.inspect} attribute is not unique") if count_index[key] > 1
+      elsif src
+        source_index[src][key]
+      else
+        name_index[key]
       end
-
-      attr
     end
 
     # Project a schema to include only specified attributes
@@ -460,7 +457,9 @@ module ROM
 
     # @api private
     def count_index
-      map(&:name).map { |name| [name, count { |attr| attr.name == name }] }.to_h
+      reduce(Hash.new(0)) do |index, attr|
+        index.merge(attr.name => index[attr.name] + 1)
+      end
     end
 
     # @api private
