@@ -237,6 +237,45 @@ RSpec.describe ROM::Setup, '#auto_registration' do
           end
         end
       end
+
+      context 'when custom inflector' do
+        let(:inflector) do
+          Dry::Inflector.new do |i|
+            i.acronym('XML')
+          end
+        end
+
+        before do
+          setup.inflector = inflector
+          setup.auto_registration(
+            SPEC_ROOT.join('fixtures/xml_space'),
+            component_dirs: {
+              relations: :xml_relations,
+              mappers: :xml_mappers,
+              commands: :xml_commands
+            }
+          )
+        end
+
+        describe '#relations' do
+          it 'loads files and returns constants' do
+            expect(setup.relation_classes).to eql([XMLSpace::XMLRelations::Customers])
+          end
+        end
+
+        describe '#commands' do
+          it 'loads files and returns constants' do
+            expect(setup.command_classes).to eql([XMLSpace::XMLCommands::CreateCustomer])
+          end
+        end
+
+        describe '#mappers' do
+          it 'loads files and returns constants' do
+            expect(setup.mapper_classes).to eql([XMLSpace::XMLCommands::CustomerList])
+          end
+        end
+      end
+
     end
   end
 end

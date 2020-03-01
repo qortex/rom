@@ -11,18 +11,23 @@ module ROM
     # This DSL is exposed in `associations do .. end` blocks in schema defintions.
     #
     # @api public
-    class AssociationsDSL < BasicObject
+    class AssociationsDSL < ::BasicObject
       # @!attribute [r] source
       #   @return [Relation::Name] The source relation
       attr_reader :source
+
+      # @!attribute [r] inflector
+      #   @return [Dry::Inflector] String inflector
+      attr_reader :inflector
 
       # @!attribute [r] registry
       #   @return [RelationRegistry] Relations registry from a rom container
       attr_reader :registry
 
       # @api private
-      def initialize(source, &block)
+      def initialize(source, inflector = ::ROM::Inflector, &block)
         @source = source
+        @inflector = inflector
         @registry = {}
         instance_exec(&block)
       end
@@ -199,7 +204,7 @@ module ROM
 
       # @api private
       def dataset_name(name)
-        Inflector.pluralize(name).to_sym
+        inflector.pluralize(name).to_sym
       end
     end
   end

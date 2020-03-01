@@ -6,6 +6,7 @@ require 'rom/struct'
 require 'rom/constants'
 require 'rom/initializer'
 require 'rom/support/memoizable'
+require 'rom/support/inflector'
 
 require 'rom/relation/class_interface'
 
@@ -188,6 +189,11 @@ module ROM
     #   @return [Hash] Meta data stored in a hash
     #   @api private
     option :meta, reader: true, default: -> { EMPTY_HASH }
+
+    # @!attribute [r] inflector
+    #   @return [Dry::Inflector] String inflector
+    #   @api private
+    option :inflector, reader: true, default: -> { Inflector }
 
     # Return schema attribute
     #
@@ -596,7 +602,7 @@ module ROM
       if attr
         attr.name
       else
-        :"#{Inflector.singularize(name.dataset)}_id"
+        :"#{inflector.singularize(name.dataset)}_id"
       end
     end
 

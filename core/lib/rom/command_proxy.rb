@@ -11,7 +11,7 @@ module ROM
     attr_reader :command, :root
 
     # @api private
-    def initialize(command, root = Inflector.singularize(command.name.relation).to_sym)
+    def initialize(command, inflector: nil, root: inflector.singularize(command.name.relation).to_sym)
       @command = command
       @root = root
     end

@@ -22,7 +22,7 @@ module ROM
 
       # @api private
       def self.default_assoc_name(relation)
-        Inflector.singularize(relation).to_sym
+        relation.inflector.singularize(relation).to_sym
       end
 
       # @api private

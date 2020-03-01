@@ -66,6 +66,11 @@ module ROM
     #   @return [Cache] local cache instance
     option :cache, default: -> { Cache.new }
 
+    # @!attribute [r] inflector
+    #   @return [Dry::Inflector] String inflector
+    #   @api private
+    option :inflector, default: -> { Inflector }
+
     # Return a specific command type for a given adapter and relation AST
     #
     # This class holds its own registry where all generated commands are being
@@ -114,7 +119,7 @@ module ROM
 
     # @api private
     def type
-      @_type ||= Commands.const_get(Inflector.classify(id))[adapter]
+      @_type ||= Commands.const_get(inflector.classify(id))[adapter]
     rescue NameError
       nil
     end
@@ -139,7 +144,7 @@ module ROM
           if meta[:combine_type] == :many
             name
           else
-            { Inflector.singularize(name).to_sym => name }
+            { inflector.singularize(name).to_sym => name }
           end
 
         mapping =
@@ -237,7 +242,7 @@ module ROM
         if relation.associations.key?(parent_relation)
           parent_relation
         else
-          singular_name = Inflector.singularize(parent_relation).to_sym
+          singular_name = inflector.singularize(parent_relation).to_sym
           singular_name if relation.associations.key?(singular_name)
         end
 
