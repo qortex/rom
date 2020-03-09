@@ -11,7 +11,7 @@ RSpec.describe ROM::Setup, '#auto_registration' do
   let(:notifications) { instance_double(ROM::Notifications::EventBus) }
 
   after do
-    %i[Persistence Users CreateUser UserList My].each do |const|
+    %i[Persistence Users CreateUser UserList My XMLSpace].each do |const|
       Object.send(:remove_const, const) if Object.const_defined?(const)
     end
 
@@ -271,11 +271,10 @@ RSpec.describe ROM::Setup, '#auto_registration' do
 
         describe '#mappers' do
           it 'loads files and returns constants' do
-            expect(setup.mapper_classes).to eql([XMLSpace::XMLCommands::CustomerList])
+            expect(setup.mapper_classes).to eql([XMLSpace::XMLMappers::CustomerList])
           end
         end
       end
-
     end
   end
 end

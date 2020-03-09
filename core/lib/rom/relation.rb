@@ -137,17 +137,22 @@ module ROM
     #   @api public
     param :dataset
 
+    # @!attribute [r] inflector
+    #   @return [Dry::Inflector] String inflector
+    #   @api private
+    option :inflector, reader: true, default: -> { Inflector }
+
     # @!attribute [r] schema
     #   @return [Schema] relation schema, defaults to class-level canonical
     #                    schema (if it was defined) and sets an empty one as
     #                    the fallback
     #   @api public
-    option :schema, default: -> { self.class.schema || self.class.default_schema }
+    option :schema, default: -> { self.class.schema || self.class.default_schema(inflector: inflector) }
 
     # @!attribute [r] name
     #   @return [Object] The relation name
     #   @api public
-    option :name, default: -> { self.class.schema ? self.class.schema.name : self.class.default_name }
+    option :name, default: -> { self.class.schema ? self.class.schema.name : self.class.default_name(inflector) }
 
     # @!attribute [r] input_schema
     #   @return [Object#[]] tuple processing function, uses schema or defaults to Hash[]
@@ -189,11 +194,6 @@ module ROM
     #   @return [Hash] Meta data stored in a hash
     #   @api private
     option :meta, reader: true, default: -> { EMPTY_HASH }
-
-    # @!attribute [r] inflector
-    #   @return [Dry::Inflector] String inflector
-    #   @api private
-    option :inflector, reader: true, default: -> { Inflector }
 
     # Return schema attribute
     #

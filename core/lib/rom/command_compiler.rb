@@ -107,7 +107,8 @@ module ROM
         command = ROM::Commands::Graph.build(registry, graph_opts)
 
         if command.graph?
-          CommandProxy.new(command)
+          root = inflector.singularize(command.name.relation).to_sym
+          CommandProxy.new(command, root)
         elsif command.lazy?
           command.unwrap
         else
@@ -195,7 +196,7 @@ module ROM
     def register_command(rel_name, type, rel_meta, parent_relation = nil)
       relation = relations[rel_name]
 
-      type.create_class(rel_name, type) do |klass|
+      type.create_class(rel_name, type, inflector: inflector) do |klass|
         klass.result(rel_meta.fetch(:combine_type, result))
 
         meta.each do |name, value|

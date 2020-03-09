@@ -12,6 +12,12 @@ module ROM
     #
     # @api public
     class AssociationsDSL < ::BasicObject
+      class << self
+        define_method(:const_missing, ::Object.method(:const_get))
+      end
+
+      include Associations::Definitions
+
       # @!attribute [r] source
       #   @return [Relation::Name] The source relation
       attr_reader :source
@@ -25,7 +31,7 @@ module ROM
       attr_reader :registry
 
       # @api private
-      def initialize(source, inflector = ::ROM::Inflector, &block)
+      def initialize(source, inflector = Inflector, &block)
         @source = source
         @inflector = inflector
         @registry = {}
@@ -66,9 +72,9 @@ module ROM
       # @api public
       def one_to_many(target, **options)
         if options[:through]
-          many_to_many(target, **options)
+          many_to_many(target, **options, inflector: inflector)
         else
-          add(::ROM::Associations::Definitions::OneToMany.new(source, target, **options))
+          add(build(OneToMany, target, options))
         end
       end
       alias_method :has_many, :one_to_many
@@ -93,7 +99,7 @@ module ROM
         if options[:through]
           one_to_one_through(target, **options)
         else
-          add(::ROM::Associations::Definitions::OneToOne.new(source, target, **options))
+          add(build(OneToOne, target, options))
         end
       end
 
@@ -106,7 +112,7 @@ module ROM
       #
       # @api public
       def one_to_one_through(target, **options)
-        add(::ROM::Associations::Definitions::OneToOneThrough.new(source, target, **options))
+        add(build(OneToOneThrough, target, options))
       end
 
       # Establish a many-to-many association
@@ -123,7 +129,7 @@ module ROM
       #
       # @api public
       def many_to_many(target, **options)
-        add(::ROM::Associations::Definitions::ManyToMany.new(source, target, **options))
+        add(build(ManyToMany, target, options))
       end
 
       # Establish a many-to-one association
@@ -140,7 +146,7 @@ module ROM
       #
       # @api public
       def many_to_one(target, **options)
-        add(::ROM::Associations::Definitions::ManyToOne.new(source, target, **options))
+        add(build(ManyToOne, target, options))
       end
 
       # Shortcut for many_to_one which sets alias automatically
@@ -187,6 +193,10 @@ module ROM
       end
 
       private
+
+      def build(definition, target, options)
+        definition.new(source, target, **options, inflector: inflector)
+      end
 
       # @api private
       def add(association)
