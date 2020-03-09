@@ -7,6 +7,7 @@ require 'rom/types'
 require 'rom/initializer'
 require 'rom/relation/name'
 require 'rom/associations/through_identifier'
+require 'rom/support/inflector'
 
 module ROM
   module Associations
@@ -98,7 +99,7 @@ module ROM
               through,
               target.relation,
               options[:assoc],
-              **options.slice(:inflector)
+              inflector: options.fetch(:inflector, Inflector)
             ]
           end
 
