@@ -18,6 +18,7 @@ jobs:
           - "2.5"
           - "2.4"
           - "jruby"
+          - "truffleruby"
         runtime_deps:
           - "rom-sql-latest"
           - "rom-sql-master"
